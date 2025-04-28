@@ -18,6 +18,13 @@ npx prisma migrate dev
 
 // Prisma Studio
 npx prisma studio
+
+// bcrypt
+npm i bcrypt
+npm i @types/bcrypt
+
+// Iron Session
+npm i iron-session
 ```
 
 ### Github

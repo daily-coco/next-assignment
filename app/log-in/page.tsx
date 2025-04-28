@@ -26,14 +26,6 @@ export default function LoginForm() {
           errors={state?.fieldErrors.formEmail}
         />
         <Input
-          type='text'
-          icon={<UserIcon />}
-          name='formName'
-          placeholder='UserName'
-          required={true}
-          errors={state?.fieldErrors.formName}
-        />
-        <Input
           type='password'
           icon={<KeyIcon />}
           name='formPassword'
