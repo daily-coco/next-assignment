@@ -64,12 +64,13 @@ export async function Login(prevState: any, formData: FormData) {
     if (ok) {
       const session = await getSession();
       session.id = user!.id;
+      await session.save();
       redirect('/profile');
     } else {
       return {
         fieldErrors: {
-          password: ['잘못된 패스워드를 입력하셨습니다.'],
-          email: [],
+          formEmail: ['잘못된 패스워드를 입력하셨습니다.'],
+          formPassword: [],
         },
       };
     }

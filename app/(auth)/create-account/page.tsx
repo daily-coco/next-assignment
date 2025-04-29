@@ -1,12 +1,11 @@
 'use client';
-
 import FormButton from '@/components/button';
 import Input from '@/components/input';
 import { useFormState } from 'react-dom';
 import { CreateAccount } from './actions';
 import { PASSWORD_MIN_LENGTH } from '@/lib/constants';
 
-export default function createAccountForm() {
+export default function CreateAccountForm() {
   const [state, action] = useFormState(CreateAccount, null);
   return (
     <div className='flex flex-col gap-2 justify-center items-center *:font-medium h-screen'>

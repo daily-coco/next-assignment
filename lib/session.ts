@@ -8,6 +8,6 @@ interface SessionContent {
 export default function getSession() {
   return getIronSession<SessionContent>(cookies(), {
     cookieName: 'lucky-market',
-    password: process.env.COOKIE_PASSWORD!, // 뒤에 [!] 연산자 잊지말기
+    password: process.env.COOKIE_PASSWORD!,
   });
 }
