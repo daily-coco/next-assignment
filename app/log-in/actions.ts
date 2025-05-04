@@ -2,7 +2,7 @@
 
 import bcrypt from 'bcrypt';
 import db from '@/lib/db';
-import { z } from 'zod';
+import { typeToFlattenedError, z } from 'zod';
 import getSession from '@/lib/session';
 import { redirect } from 'next/navigation';
 
@@ -35,7 +35,18 @@ const formSchema = z.object({
   }),
 });
 
-export async function Login(prevState: any, formData: FormData) {
+interface FormState {
+  isSuccess: boolean;
+  error: typeToFlattenedError<
+    { formEmail: string; formPassword: string },
+    string
+  > | null;
+}
+
+export async function handleForm(
+  _: any,
+  formData: FormData
+): Promise<FormState> {
   const data = {
     formEmail: formData.get('formEmail'),
     formPassword: formData.get('formPassword'),
@@ -43,7 +54,10 @@ export async function Login(prevState: any, formData: FormData) {
 
   const result = await formSchema.spa(data);
   if (!result.success) {
-    return result.error.flatten();
+    return {
+      error: result.error.flatten(),
+      isSuccess: false,
+    };
   } else {
     // 이메일 존재하는 경우
     const user = await db.user.findUnique({
@@ -56,23 +70,24 @@ export async function Login(prevState: any, formData: FormData) {
       },
     });
 
-    const ok = await bcrypt.compare(
-      result.data.formPassword,
-      user!.password ?? 'xxxx'
-    );
-
-    if (ok) {
-      const session = await getSession();
-      session.id = user!.id;
-      await session.save();
-      redirect('/profile');
-    } else {
+    if (
+      !user ||
+      !(await bcrypt.compare(result.data.formPassword, user.password))
+    ) {
       return {
-        fieldErrors: {
-          formEmail: ['잘못된 패스워드를 입력하셨습니다.'],
-          formPassword: [],
+        error: {
+          formErrors: [],
+          fieldErrors: {
+            formPassword: ['wrong password'],
+            formEmail: [],
+          },
         },
+        isSuccess: false,
       };
     }
+    const session = await getSession();
+    session.id = user!.id;
+    await session.save();
+    redirect('/');
   }
 }

@@ -1,3 +1,4 @@
+import Button from '@/components/button';
 import db from '@/lib/db';
 import getSession from '@/lib/session';
 import { notFound, redirect } from 'next/navigation';
@@ -30,11 +31,11 @@ export default async function Profile() {
     redirect('/');
   };
   return (
-    <div>
-      <h1>Wellcome! {user?.username}!</h1>
-      <form action={logOut}>
-        <button>Log out</button>
+    <main className='flex flex-col gap-20 items-center justify-center'>
+      <h1 className='mt-40 text-xl font-bold'>Welcome! {user?.username}!</h1>
+      <form className='w-full' action={logOut}>
+        <Button text='Log out' />
       </form>
-    </div>
+    </main>
   );
 }

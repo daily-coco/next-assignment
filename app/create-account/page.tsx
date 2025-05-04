@@ -1,5 +1,5 @@
 'use client';
-import FormButton from '@/components/button';
+import Button from '@/components/button';
 import Input from '@/components/input';
 import { useFormState } from 'react-dom';
 import { CreateAccount } from './actions';
@@ -43,7 +43,7 @@ export default function CreateAccountForm() {
           min={PASSWORD_MIN_LENGTH}
           errors={state?.fieldErrors.passwordConfirm}
         />
-        <FormButton text='JOIN' />
+        <Button text='JOIN' />
       </form>
     </div>
   );

@@ -1,27 +1,28 @@
+import getSession from '@/lib/session';
 import { NextRequest, NextResponse } from 'next/server';
-import getSession from './lib/session';
+
 interface Routes {
   [key: string]: boolean;
 }
 
+const publicOnlyUrls: Routes = {
+  '/log-in': true,
+  '/create-account': true,
+};
+
 export async function middleware(request: NextRequest) {
   const session = await getSession();
-  const publicOnlyUrls: Routes = {
-    '/': true,
-    '/log-in': true,
-    '/create-account': true,
-  };
 
   //user가 로그인 되지 않은 상태
-  const exists = publicOnlyUrls[request.nextUrl.pathname]; // false가 뜨면 ! => true : true가 되니 로그아웃 상태로 최종 체크
+  const isPublicUrl = publicOnlyUrls[request.nextUrl.pathname]; // false가 뜨면 ! => true : true가 되니 로그아웃 상태로 최종 체크
 
   if (!session.id) {
-    if (!exists) {
+    if (!isPublicUrl) {
       return NextResponse.redirect(new URL('/log-in', request.url));
     }
   } else {
-    if (exists) {
-      return NextResponse.redirect(new URL('/profile', request.url));
+    if (isPublicUrl) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
   }
 }

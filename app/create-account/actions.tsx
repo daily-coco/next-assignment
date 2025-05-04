@@ -5,6 +5,7 @@ import {
   PASSWORD_MIN_LENGTH,
   PASSWORD_NUM_REGEX,
   PASSWORD_NUM_REGEX_ERROR,
+  PASSWORD_NUM_REGEX_ROUND,
   USERNAME_MIN_LENGTH,
 } from '@/lib/constants';
 import { z } from 'zod';
@@ -31,7 +32,10 @@ const formSchema = z.object({
     })
     .toLowerCase()
     .trim()
-    .min(USERNAME_MIN_LENGTH, '사용자 이름은 최소 5자 입력해야 합니다.'),
+    .min(
+      USERNAME_MIN_LENGTH,
+      `사용자 이름은 최소 ${USERNAME_MIN_LENGTH}자 입력해야 합니다.`
+    ),
   email: z
     .string({
       invalid_type_error:
@@ -40,21 +44,24 @@ const formSchema = z.object({
     })
     .email()
     .toLowerCase()
-    .refine(checkAllowedDomain, '오직 @zod.com 도메이만 허용됩니다.'),
+    .refine(
+      checkAllowedDomain,
+      `오직 ${EMAIL_ALLOWED_DOMAIN}도메인만 허용됩니다.`
+    ),
   password: z
     .string({
       invalid_type_error: '정확한 비밀번호를 입력해주세요.',
       required_error: '비밀번호 입력은 필수 입력입니다.',
     })
     .regex(passwordRegexChk, PASSWORD_NUM_REGEX_ERROR)
-    .min(PASSWORD_MIN_LENGTH, '패스워드는 최소 10자 입니다.'),
+    .min(PASSWORD_MIN_LENGTH, `패스워드는 ${PASSWORD_MIN_LENGTH} 입니다.`),
   passwordConfirm: z
     .string({
       invalid_type_error: '확인을 위한 비밀번호를 입력해주세요.',
       required_error: '확인 비밀번호 입력은 필수 입력입니다.',
     })
     .regex(passwordRegexChk, PASSWORD_NUM_REGEX_ERROR)
-    .min(PASSWORD_MIN_LENGTH, '패스워드는 최소 10자 입니다.'),
+    .min(PASSWORD_MIN_LENGTH, `패스워드는 ${PASSWORD_MIN_LENGTH} 입니다.`),
 });
 
 export async function CreateAccount(prevState: any, formData: FormData) {
@@ -70,7 +77,10 @@ export async function CreateAccount(prevState: any, formData: FormData) {
     return result.error.flatten();
   } else {
     // passwrod hash
-    const hashPassword = await bcrypt.hash(result.data.password, 12);
+    const hashPassword = await bcrypt.hash(
+      result.data.password,
+      PASSWORD_NUM_REGEX_ROUND
+    );
     // save DB
     const user = await db.user.create({
       data: {
@@ -86,7 +96,6 @@ export async function CreateAccount(prevState: any, formData: FormData) {
     const session = await getSession();
     session.id = user.id;
     await session.save();
-
-    redirect('/profile');
+    redirect('/');
   }
 }

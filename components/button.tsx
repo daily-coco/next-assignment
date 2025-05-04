@@ -4,7 +4,7 @@ import { useFormStatus } from 'react-dom';
 interface IFormBtnProps {
   text: string;
 }
-export default function FormButton({ text }: IFormBtnProps) {
+export default function Button({ text }: IFormBtnProps) {
   const { pending } = useFormStatus();
   return (
     <>
